@@ -1443,7 +1443,7 @@ function saveMember(e) {
     }
   } else {
     // New
-    member.photo = _pendingPhotoData || '';
+    if (!member.photo) member.photo = '';
     member.allergies = [];
     member.diseases = [];
     member.illnesses = [];
