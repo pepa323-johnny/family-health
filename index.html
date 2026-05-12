@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家庭健康管理</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #f0f4fa;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f8fafe;
+    --border: rgba(74, 144, 226, 0.18);
+    --border-active: rgba(74, 144, 226, 0.55);
+    --accent: #3b7ed8;
+    --accent-dim: rgba(59, 126, 216, 0.08);
+    --text: #1a2740;
+    --text-dim: #5c6f8c;
+    --text-muted: #99a8bf;
+    --danger: #d94053;
+    --success: #28a87a;
+    --warning: #d48535;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg-deep);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ===== Header ===== */
+  .app-header {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .app-logo {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .app-logo .dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  /* ===== Buttons ===== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #5a9ef0; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--border-active);
+  }
+  .btn-outline:hover { background: var(--accent-dim); }
+
+  .btn-sm {
+    padding: 4px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: rgba(224, 85, 106, 0.3);
+  }
+  .btn-danger:hover { background: rgba(224, 85, 106, 0.1); }
+
+  .icon-btn {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .icon-btn:hover { border-color: var(--border-active); color: var(--text); }
+
+  /* ===== Layout ===== */
+  .main-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* ===== Member Cards ===== */
+  .member-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .member-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .member-card:hover {
+    border-color: var(--border-active);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .member-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: var(--accent-dim);
+    margin-bottom: 14px;
+  }
+
+  .member-name {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .member-info {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .member-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid rgba(74, 144, 226, 0.15);
+  }
+
+  .tag.warn {
+    background: rgba(240, 160, 80, 0.1);
+    color: var(--warning);
+    border-color: rgba(240, 160, 80, 0.2);
+  }
+
+  /* ===== Detail View ===== */
+  .detail-view { display: none; }
+
+  .back-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .detail-profile {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .detail-avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+  }
+
+  .detail-info { flex: 1; min-width: 200px; }
+  .detail-name { font-size: 22px; font-weight: 600; }
+  .detail-meta { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+
+  /* Record sections */
+  .record-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .record-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .record-section-title {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .record-section-title .icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  .record-list { list-style: none; }
+
+  .record-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .record-item:last-child { border-bottom: none; }
+  .record-item:hover { background: rgba(74, 144, 226, 0.03); }
+
+  .record-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .record-dot.allergy { background: var(--danger); }
+  .record-dot.disease { background: var(--warning); }
+  .record-dot.illness { background: var(--accent); }
+  .record-dot.checkup { background: var(--success); }
+  .record-dot.vaccination { background: var(--success); }
+  .record-dot.growth { background: var(--accent); }
+  .record-dot.visit { background: var(--warning); }
+
+  .record-body { flex: 1; min-width: 0; }
+  .record-title { font-size: 14px; font-weight: 500; }
+  .record-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .record-note { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+
+  .record-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .severity {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 6px;
+  }
+  .severity.mild { background: rgba(52, 200, 149, 0.15); color: var(--success); }
+  .severity.moderate { background: rgba(240, 160, 80, 0.15); color: var(--warning); }
+  .severity.severe { background: rgba(224, 85, 106, 0.15); color: var(--danger); }
+
+  /* ===== Modal ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 460px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: #f5f7fc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--border-active);
+  }
+
+  .form-group textarea { min-height: 70px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  /* ===== Confirm Dialog ===== */
+  .confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .confirm-overlay.active { display: flex; }
+
+  .confirm-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+    max-width: 360px;
+    width: 100%;
+  }
+
+  .confirm-box p { margin-bottom: 20px; font-size: 14px; }
+
+  .confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 640px) {
+    .app-header { padding: 0 16px; }
+    .main-content { padding: 20px 14px; }
+    .member-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .detail-profile { flex-direction: column; text-align: center; }
+    .modal { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="app-header">
+  <div class="app-logo">
+    <span class="dot"></span> 家庭健康管理
+  </div>
+  <div class="header-actions" id="headerActions">
+    <button class="btn btn-primary" onclick="showAddMemberModal()">+ 添加成员</button>
+  </div>
+</header>
+
+<!-- ===== Main Content ===== -->
+<div class="main-content">
+
+  <!-- 成员列表视图 -->
+  <div id="memberListView">
+    <div class="section-header">
+      <div>
+        <div class="section-title">家庭成员</div>
+        <div class="section-subtitle">点击卡片查看详细健康档案</div>
+      </div>
+    </div>
+    <div class="member-grid" id="memberGrid"></div>
+    <div class="empty-state" id="emptyMembers" style="display:none">还没有添加家庭成员，点击上方按钮开始</div>
+  </div>
+
+  <!-- 成员详情视图 -->
+  <div class="detail-view" id="detailView">
+    <div class="back-row">
+      <button class="icon-btn" onclick="backToList()">←</button>
+      <span style="font-size:15px;font-weight:500;">返回成员列表</span>
+    </div>
+    <div class="detail-profile" id="detailProfile"></div>
+    <div id="detailRecords"></div>
+  </div>
+</div>
+
+<!-- ===== Add/Edit Member Modal ===== -->
+<div class="modal-overlay" id="memberModal">
+  <div class="modal">
+    <h3 id="memberModalTitle">添加家庭成员</h3>
+    <form id="memberForm" onsubmit="saveMember(event)">
+      <input type="hidden" id="memberId">
+      <div class="form-row">
+        <div class="form-group">
+          <label>姓名</label>
+          <input type="text" id="memberName" required placeholder="请输入姓名">
+        </div>
+        <div class="form-group">
+          <label>性别</label>
+          <select id="memberGender">
+            <option value="男">男</option>
+            <option value="女">女</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>出生日期</label>
+          <input type="date" id="memberBirth">
+        </div>
+        <div class="form-group">
+          <label>与我的关系</label>
+          <select id="memberRelation">
+            <option value="本人">本人</option>
+            <option value="配偶">配偶</option>
+            <option value="父亲">父亲</option>
+            <option value="母亲">母亲</option>
+            <option value="儿子">儿子</option>
+            <option value="女儿">女儿</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>头像</label>
+        <input type="file" id="memberPhoto" accept="image/*" onchange="previewMemberPhoto()" style="font-size:13px;">
+        <div id="photoArea" style="display:none;margin-top:10px;display:flex;align-items:center;gap:12px;">
+          <img id="memberPhotoPreview" src="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid var(--border);">
+          <button type="button" class="btn btn-outline btn-sm" onclick="removeMemberPhoto()">移除照片</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">支持 JPG/PNG，留空则使用默认头像</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('memberModal')">取消</button>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== Add Record Modal ===== -->
+<div class="modal-overlay" id="recordModal">
+  <div class="modal">
+    <h3 id="recordModalTitle">添加记录</h3>
+    <form id="recordForm" onsubmit="saveRecord(event)">
+      <input type="hidden" id="recordMemberId">
+      <input type="hidden" id="recordType">
+      <input type="hidden" id="recordId">
+      <div class="form-group" id="recordNameGroup">
+        <label id="recordNameLabel">名称</label>
+        <input type="text" id="recordName" required placeholder="请输入">
+      </div>
+      <div class="form-group" id="severityGroup" style="display:none">
+        <label>严重程度</label>
+        <select id="recordSeverity">
+          <option value="轻度">轻度</option>
+          <option value="中度">中度</option>
+          <option value="重度">重度</option>
+        </select>
+      </div>
+      <div class="form-row" id="dateRow1">
+        <div class="form-group">
+          <label id="dateLabel1">日期</label>
+          <input type="date" id="recordDate1">
+        </div>
+        <div class="form-group" id="dateGroup2">
+          <label id="dateLabel2">结束日期</label>
+          <input type="date" id="recordDate2">
+        </div>
+      </div>
+      <div id="curedGroup" class="form-group" style="display:none">
+        <label>是否已治愈</label>
+        <select id="recordCured">
+          <option value="是">是，已治愈</option>
+          <option value="否">否，持续治疗中</option>
+        </select>
+      </div>
+      <div class="form-group" id="medicationGroup" style="display:none">
+        <label>用药情况</label>
+        <input type="text" id="recordMedication" placeholder="请输入用药信息">
+      </div>
+      <div class="form-group" id="hospitalGroup" style="display:none">
+        <label>医院</label>
+        <input type="text" id="recordHospital" placeholder="请输入医院名称">
+      </div>
+      <div class="form-group" id="indicatorsGroup" style="display:none">
+        <label>关键指标</label>
+        <textarea id="recordIndicators" placeholder="如：血压120/80，血糖5.2，总胆固醇4.5"></textarea>
+      </div>
+      <div class="form-group" id="locationGroup" style="display:none">
+        <label>接种地点</label>
+        <input type="text" id="recordLocation" placeholder="请输入接种地点">
+      </div>
+      <div class="form-group" id="batchGroup" style="display:none">
+        <label>疫苗批号</label>
+        <input type="text" id="recordBatch" placeholder="请输入疫苗批号">
+      </div>
+      <div class="form-group" id="nextDateGroup" style="display:none">
+        <label>下剂日期</label>
+        <input type="date" id="recordNextDate">
+      </div>
+      <div class="form-row" id="heightWeightGroup" style="display:none">
+        <div class="form-group">
+          <label>身高 (cm)</label>
+          <input type="number" id="recordHeight" placeholder="如：175" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>体重 (kg)</label>
+          <input type="number" id="recordWeight" placeholder="如：68" step="0.1">
+        </div>
+      </div>
+      <div class="form-row" id="doctorDeptGroup" style="display:none">
+        <div class="form-group">
+          <label>科室</label>
+          <input type="text" id="recordDepartment" placeholder="如：内科">
+        </div>
+        <div class="form-group">
+          <label>医生</label>
+          <input type="text" id="recordDoctor" placeholder="医生姓名">
+        </div>
+      </div>
+      <div class="form-group" id="costGroup" style="display:none">
+        <label>费用 (元)</label>
+        <input type="number" id="recordCost" placeholder="如：350" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <textarea id="recordNote" placeholder="可选备注信息"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('recordModal')">取消</button>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== Confirm Dialog ===== -->
+<div class="confirm-overlay" id="confirmDialog">
+  <div class="confirm-box">
+    <p id="confirmMsg">确定要删除吗？此操作不可撤销。</p>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" onclick="closeConfirm()">取消</button>
+      <button class="btn btn-danger" id="confirmBtn" onclick="execConfirm()">确定删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// Data Layer
+// ==========================================
+var STORAGE_KEY = 'family_health_v2';
+
+function loadData() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { members: [], nextId: 1 };
+  } catch (e) {
+    return { members: [], nextId: 1 };
+  }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getData() { return loadData(); }
+
+// ==========================================
+// Helpers
+// ==========================================
+function uid() {
+  var d = getData();
+  var id = 'm' + d.nextId;
+  d.nextId++;
+  saveData(d);
+  return id;
+}
+
+function rid() {
+  var d = getData();
+  var id = 'r' + d.nextId;
+  d.nextId++;
+  saveData(d);
+  return id;
+}
+
+function findMember(id, d) {
+  d = d || getData();
+  for (var i = 0; i < d.members.length; i++) {
+    if (d.members[i].id === id) return d.members[i];
+  }
+  return null;
+}
+
+function calcAge(birth) {
+  if (!birth) return '';
+  var b = new Date(birth);
+  var now = new Date();
+  var age = now.getFullYear() - b.getFullYear();
+  var m = now.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+  return age + '岁';
+}
+
+function fmtDate(d) { return d || ''; }
+
+var _pendingPhotoData = null;
+
+function previewMemberPhoto() {
+  var file = document.getElementById('memberPhoto').files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _pendingPhotoData = e.target.result;
+    document.getElementById('memberPhotoPreview').src = e.target.result;
+    document.getElementById('photoArea').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeMemberPhoto() {
+  _pendingPhotoData = '__remove__';
+  document.getElementById('memberPhoto').value = '';
+  document.getElementById('photoArea').style.display = 'none';
+  document.getElementById('memberPhotoPreview').src = '';
+}
+
+function setMemberPhoto(photoData) {
+  if (photoData && photoData !== '__remove__') {
+    document.getElementById('memberPhotoPreview').src = photoData;
+    document.getElementById('photoArea').style.display = 'flex';
+    _pendingPhotoData = photoData;
+  } else {
+    document.getElementById('photoArea').style.display = 'none';
+    _pendingPhotoData = null;
+  }
+}
+
+function renderMemberAvatar(m) {
+  if (m.photo) {
+    return '<img src="' + m.photo + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" alt="">';
+  }
+  return '<span style="font-size:24px;">' + (m.avatar || '👨') + '</span>';
+}
+
+function renderDetailAvatar(m) {
+  if (m.photo) {
+    return '<img src="' + m.photo + '" style="width:64px;height:64px;border-radius:50%;object-fit:cover;" alt="">';
+  }
+  return '<span style="font-size:32px;">' + (m.avatar || '👨') + '</span>';
+}
+
+// ==========================================
+// Render: Member List
+// ==========================================
+function renderMemberList() {
+  var d = getData();
+  var grid = document.getElementById('memberGrid');
+  var empty = document.getElementById('emptyMembers');
+
+  if (d.members.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  var html = '';
+  d.members.forEach(function(m) {
+    var tagsHtml = '';
+    if (m.allergies && m.allergies.length > 0) {
+      tagsHtml += '<span class="tag warn">过敏 ' + m.allergies.length + '项</span>';
+    }
+    if (m.diseases && m.diseases.length > 0) {
+      tagsHtml += '<span class="tag">病史 ' + m.diseases.length + '项</span>';
+    }
+    if (m.illnesses && m.illnesses.length > 0) {
+      tagsHtml += '<span class="tag">生病 ' + m.illnesses.length + '次</span>';
+    }
+    if (m.checkups && m.checkups.length > 0) {
+      tagsHtml += '<span class="tag">体检 ' + m.checkups.length + '次</span>';
+    }
+    if (m.vaccinations && m.vaccinations.length > 0) {
+      tagsHtml += '<span class="tag warn">疫苗 ' + m.vaccinations.length + '针</span>';
+    }
+    if (!tagsHtml) {
+      tagsHtml = '<span style="font-size:12px;color:var(--text-muted)">暂无健康记录</span>';
+    }
+
+    var age = calcAge(m.birth);
+    html += '<div class="member-card" onclick="viewMember(\'' + m.id + '\')">' +
+      '<div class="member-avatar">' + renderMemberAvatar(m) + '</div>' +
+      '<div class="member-name">' + escHtml(m.name) + '</div>' +
+      '<div class="member-info">' + (m.gender || '') + ' · ' + (age || '未知') + ' · ' + escHtml(m.relation || '') + '</div>' +
+      '<div class="member-tags">' + tagsHtml + '</div>' +
+    '</div>';
+  });
+  grid.innerHTML = html;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ==========================================
+// Render: Member Detail
+// ==========================================
+function viewMember(id) {
+  var m = findMember(id);
+  if (!m) return;
+
+  document.getElementById('memberListView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  document.getElementById('headerActions').style.display = 'none';
+
+  // Profile
+  var age = calcAge(m.birth);
+  var profileHtml = '' +
+    '<div class="detail-avatar">' + renderDetailAvatar(m) + '</div>' +
+    '<div class="detail-info">' +
+      '<div class="detail-name">' + escHtml(m.name) + '</div>' +
+      '<div class="detail-meta">' + (m.gender || '') + ' · ' + (age || '未知') + ' · ' + escHtml(m.relation || '') + (m.birth ? ' · 生日 ' + m.birth : '') + '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;">' +
+      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showEditMemberModal(\'' + m.id + '\')">编辑</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();confirmDeleteMember(\'' + m.id + '\')">删除</button>' +
+    '</div>';
+  document.getElementById('detailProfile').innerHTML = profileHtml;
+
+  // Records
+  var recordsHtml = '';
+
+  // Allergies
+  recordsHtml += '<div class="record-section">' +
+    '<div class="record-section-header">' +
+      '<div class="record-section-title"><span class="icon" style="background:rgba(224,85,106,0.12);">⚠️</span>过敏史</div>' +
+      '<button class="btn btn-outline btn-sm" onclick="showAddRecordModal(\'' + m.id + '\', \'allergy\')">+ 添加</button>' +
+    '</div>';
+  if (m.allergies && m.allergies.length > 0) {
+    recordsHtml += '<div class="record-list">';
+    m.allergies.forEach(function(a) {
+      recordsHtml += renderRecordItem(m.id, a, 'allergy');
+    });
+    recordsHtml += '</div>';
+  } else {
+    recordsHtml += '<div class="empty-state">暂无过敏记录</div>';
+  }
+  recordsHtml += '</div>';
+
+  // Diseases
+  recordsHtml += '<div class="record-section">' +
+    '<div class="record-section-header">' +
+      '<div class="record-section-title"><span class="icon" style="background:rgba(240,160,80,0.12);">🩺</span>疾病史</div>' +
+      '<button class="btn btn-outline btn-sm" onclick="showAddRecordModal(\'' + m.id + '\', \'disease\')">+ 添加</button>' +
+    '</div>';
+  if (m.diseases && m.diseases.length > 0) {
+    recordsHtml += '<div class="record-list">';
+    m.diseases.forEach(function(d) {
+      recordsHtml += renderRecordItem(m.id, d, 'disease');
+    });
+    recordsHtml += '</div>';
+  } else {
+    recordsHtml += '<div class="empty-state">暂无疾病记录</div>';
+  }
+  recordsHtml += '</div>';
+
+  // Illnesses
+  recordsHtml += '<div class="record-section">' +
+    '<div class="record-section-header">' +
+      '<div class="record-section-title"><span class="icon" style="background:rgba(74,144,226,0.12);">🤒</span>生病记录</div>' +
+      '<button class="btn btn-outline btn-sm" onclick="showAddRecordModal(\'' + m.id + '\', \'illness\')">+ 添加</button>' +
+    '</div>';
+  if (m.illnesses && m.illnesses.length > 0) {
+    recordsHtml += '<div class="record-list">';
+    m.illnesses.forEach(function(ill) {
+      recordsHtml += renderRecordItem(m.id, ill, 'illness');
+    });
+    recordsHtml += '</div>';
+  } else {
+    recordsHtml += '<div class="empty-state">暂无生病记录</div>';
+  }
+  recordsHtml += '</div>';
+
+  // Checkups
+  recordsHtml += '<div class="record-section">' +
+    '<div class="record-section-header">' +
+      '<div class="record-section-title"><span class="icon" style="background:rgba(52,200,149,0.12);">🩻</span>体检报告</div>' +
+      '<button class="btn btn-outline btn-sm" onclick="showAddRecordModal(\'' + m.id + '\', \'checkup\')">+ 添加</button>' +
+    '</div>';
+  if (m.checkups && m.checkups.length > 0) {
+    recordsHtml += '<div class="record-list">';
+    m.checkups.forEach(function(c) {
+      recordsHtml += renderRecordItem(m.id, c, 'checkup');
+    });
+    recordsHtml += '</div>';
+  } else {
+    recordsHtml += '<div class="empty-state">暂无体检记录</div>';
+  }
+  recordsHtml += '</div>';
+
+  // Vaccinations
+  recordsHtml += '<div class="record-section">' +
+    '<div class="record-section-header">' +
+      '<div class="record-section-title"><span class="icon" style="background:rgba(52,200,149,0.12);">💉</span>疫苗接种</div>' +
+      '<button class="btn btn-outline btn-sm" onclick="showAddRecordModal(\'' + m.id + '\', \'vaccination\')">+ 添加</button>' +
+    '</div>';
+  if (m.vaccinations && m.vaccinations.length > 0) {
+    recordsHtml += '<div class="record-list">';
+    m.vaccinations.forEach(function(v) {
+      recordsHtml += renderRecordItem(m.id, v, 'vaccination');
+    });
+    recordsHtml += '</div>';
+  } else {
+    recordsHtml += '<div class="empty-state">暂无疫苗接种记录</div>';
+  }
+  recordsHtml += '</div>';
+
+  // Growth
+  recordsHtml += '<div class="record-section">' +
+    '<div class="record-section-header">' +
+      '<div class="record-section-title"><span class="icon" style="background:rgba(74,144,226,0.12);">📏</span>身高体重</div>' +
+      '<button class="btn btn-outline btn-sm" onclick="showAddRecordModal(\'' + m.id + '\', \'growth\')">+ 添加</button>' +
+    '</div>';
+  if (m.growth && m.growth.length > 0) {
+    recordsHtml += '<div class="record-list">';
+    m.growth.forEach(function(g) {
+      recordsHtml += renderRecordItem(m.id, g, 'growth');
+    });
+    recordsHtml += '</div>';
+  } else {
+    recordsHtml += '<div class="empty-state">暂无身高体重记录</div>';
+  }
+  recordsHtml += '</div>';
+
+  // Medical Visits
+  recordsHtml += '<div class="record-section">' +
+    '<div class="record-section-header">' +
+      '<div class="record-section-title"><span class="icon" style="background:rgba(240,160,80,0.12);">🏥</span>就医记录</div>' +
+      '<button class="btn btn-outline btn-sm" onclick="showAddRecordModal(\'' + m.id + '\', \'visit\')">+ 添加</button>' +
+    '</div>';
+  if (m.visits && m.visits.length > 0) {
+    recordsHtml += '<div class="record-list">';
+    m.visits.forEach(function(v) {
+      recordsHtml += renderRecordItem(m.id, v, 'visit');
+    });
+    recordsHtml += '</div>';
+  } else {
+    recordsHtml += '<div class="empty-state">暂无就医记录</div>';
+  }
+  recordsHtml += '</div>';
+
+  document.getElementById('detailRecords').innerHTML = recordsHtml;
+}
+
+function renderRecordItem(memberId, rec, type) {
+  var sevHtml = '';
+  if (type === 'allergy' && rec.severity) {
+    var sevCls = '';
+    if (rec.severity === '轻度') sevCls = 'mild';
+    else if (rec.severity === '中度') sevCls = 'moderate';
+    else sevCls = 'severe';
+    sevHtml = '<span class="severity ' + sevCls + '">' + rec.severity + '</span>';
+  }
+
+  var title = escHtml(rec.name || '');
+  var subParts = [];
+  if (rec.date1) subParts.push(rec.date1);
+  if (rec.date2) subParts.push('至 ' + rec.date2);
+  if (rec.cured) subParts.push(rec.cured === '是' ? '已治愈' : '持续治疗中');
+  if (rec.hospital) subParts.push(escHtml(rec.hospital));
+  if (rec.doctor) subParts.push(escHtml(rec.doctor));
+  if (rec.department) subParts.push(escHtml(rec.department));
+  if (rec.height) subParts.push(rec.height + 'cm');
+  if (rec.weight) subParts.push(rec.weight + 'kg');
+  if (rec.cost) subParts.push('¥' + rec.cost);
+  var sub = subParts.join(' · ');
+
+  var noteHtml = '';
+  if (rec.medication) {
+    noteHtml += '<div class="record-note">用药：' + escHtml(rec.medication) + '</div>';
+  }
+  if (rec.indicators) {
+    noteHtml += '<div class="record-note">指标：' + escHtml(rec.indicators) + '</div>';
+  }
+  if (rec.location) {
+    noteHtml += '<div class="record-note">接种地点：' + escHtml(rec.location) + '</div>';
+  }
+  if (rec.batch) {
+    noteHtml += '<div class="record-note">疫苗批号：' + escHtml(rec.batch) + '</div>';
+  }
+  if (rec.nextDate) {
+    noteHtml += '<div class="record-note">下剂日期：' + rec.nextDate + '</div>';
+  }
+  if (rec.note) {
+    noteHtml += '<div class="record-note">备注：' + escHtml(rec.note) + '</div>';
+  }
+
+  return '<div class="record-item">' +
+    '<span class="record-dot ' + type + '"></span>' +
+    '<div class="record-body">' +
+      '<span class="record-title">' + title + sevHtml + '</span>' +
+      (sub ? '<div class="record-sub">' + sub + '</div>' : '') +
+      noteHtml +
+    '</div>' +
+    '<div class="record-actions">' +
+      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showEditRecordModal(\'' + memberId + '\', \'' + type + '\', \'' + rec.id + '\')">编辑</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();confirmDeleteRecord(\'' + memberId + '\', \'' + type + '\', \'' + rec.id + '\')">删除</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function backToList() {
+  document.getElementById('memberListView').style.display = 'block';
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('headerActions').style.display = 'flex';
+  renderMemberList();
+}
+
+// ==========================================
+// Member CRUD
+// ==========================================
+function showAddMemberModal() {
+  document.getElementById('memberModalTitle').textContent = '添加家庭成员';
+  document.getElementById('memberForm').reset();
+  document.getElementById('memberId').value = '';
+  _pendingPhotoData = null;
+  document.getElementById('memberPhoto').value = '';
+  document.getElementById('photoArea').style.display = 'none';
+  document.getElementById('memberModal').classList.add('active');
+}
+
+function showEditMemberModal(id) {
+  var m = findMember(id);
+  if (!m) return;
+  document.getElementById('memberModalTitle').textContent = '编辑成员信息';
+  document.getElementById('memberId').value = m.id;
+  document.getElementById('memberName').value = m.name || '';
+  document.getElementById('memberGender').value = m.gender || '男';
+  document.getElementById('memberBirth').value = m.birth || '';
+  document.getElementById('memberRelation').value = m.relation || '本人';
+  setMemberPhoto(m.photo || null);
+  document.getElementById('memberModal').classList.add('active');
+}
+
+function saveMember(e) {
+  e.preventDefault();
+  var d = getData();
+  var id = document.getElementById('memberId').value;
+
+  var member = {
+    id: id || uid(),
+    name: document.getElementById('memberName').value.trim(),
+    gender: document.getElementById('memberGender').value,
+    birth: document.getElementById('memberBirth').value,
+    relation: document.getElementById('memberRelation').value,
+    avatar: '👨'
+  };
+
+  // Handle photo
+  if (_pendingPhotoData === '__remove__') {
+    member.photo = '';
+    _pendingPhotoData = null;
+  } else if (_pendingPhotoData) {
+    member.photo = _pendingPhotoData;
+    _pendingPhotoData = null;
+  }
+
+  if (id) {
+    // Update existing
+    for (var i = 0; i < d.members.length; i++) {
+      if (d.members[i].id === id) {
+        if (!member.photo && member.photo !== '') member.photo = d.members[i].photo || '';
+        member.allergies = d.members[i].allergies || [];
+        member.diseases = d.members[i].diseases || [];
+        member.illnesses = d.members[i].illnesses || [];
+        member.checkups = d.members[i].checkups || [];
+        member.vaccinations = d.members[i].vaccinations || [];
+        member.growth = d.members[i].growth || [];
+        member.visits = d.members[i].visits || [];
+        d.members[i] = member;
+        break;
+      }
+    }
+  } else {
+    // New
+    member.photo = _pendingPhotoData || '';
+    member.allergies = [];
+    member.diseases = [];
+    member.illnesses = [];
+    member.checkups = [];
+    member.vaccinations = [];
+    member.growth = [];
+    member.visits = [];
+    d.members.push(member);
+  }
+
+  saveData(d);
+  closeModal('memberModal');
+
+  if (document.getElementById('detailView').style.display === 'block') {
+    viewMember(member.id);
+  } else {
+    renderMemberList();
+  }
+}
+
+var _pendingDeleteMemberId = null;
+
+function confirmDeleteMember(id) {
+  _pendingDeleteMemberId = id;
+  document.getElementById('confirmMsg').textContent = '确定要删除该成员及其所有健康记录吗？此操作不可撤销。';
+  document.getElementById('confirmDialog').classList.add('active');
+}
+
+function execConfirm() {
+  if (_pendingDeleteMemberId) {
+    deleteMember(_pendingDeleteMemberId);
+    _pendingDeleteMemberId = null;
+  }
+  if (_pendingDeleteRecord) {
+    execDeleteRecord();
+  }
+  closeConfirm();
+}
+
+function deleteMember(id) {
+  var d = getData();
+  d.members = d.members.filter(function(m) { return m.id !== id; });
+  saveData(d);
+  backToList();
+}
+
+// ==========================================
+// Record CRUD
+// ==========================================
+function showAddRecordModal(memberId, type) {
+  var titles = {
+    allergy: '添加过敏记录', disease: '添加疾病记录', illness: '添加生病记录',
+    checkup: '添加体检记录', vaccination: '添加疫苗记录', growth: '添加身高体重', visit: '添加就医记录'
+  };
+  document.getElementById('recordModalTitle').textContent = titles[type];
+  document.getElementById('recordForm').reset();
+  document.getElementById('recordMemberId').value = memberId;
+  document.getElementById('recordType').value = type;
+  document.getElementById('recordId').value = '';
+  configureRecordForm(type);
+  document.getElementById('recordModal').classList.add('active');
+}
+
+function showEditRecordModal(memberId, type, recordId) {
+  var m = findMember(memberId);
+  if (!m) return;
+  var listMap = {
+    allergy: m.allergies, disease: m.diseases, illness: m.illnesses,
+    checkup: m.checkups, vaccination: m.vaccinations, growth: m.growth, visit: m.visits
+  };
+  var list = listMap[type];
+  var rec = null;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].id === recordId) { rec = list[i]; break; }
+  }
+  if (!rec) return;
+
+  var titles = {
+    allergy: '编辑过敏记录', disease: '编辑疾病记录', illness: '编辑生病记录',
+    checkup: '编辑体检记录', vaccination: '编辑疫苗记录', growth: '编辑身高体重', visit: '编辑就医记录'
+  };
+  document.getElementById('recordModalTitle').textContent = titles[type];
+  document.getElementById('recordMemberId').value = memberId;
+  document.getElementById('recordType').value = type;
+  document.getElementById('recordId').value = recordId;
+  configureRecordForm(type);
+
+  document.getElementById('recordName').value = rec.name || '';
+  if (rec.severity) document.getElementById('recordSeverity').value = rec.severity;
+  if (rec.date1) document.getElementById('recordDate1').value = rec.date1;
+  if (rec.date2) document.getElementById('recordDate2').value = rec.date2;
+  if (rec.cured) document.getElementById('recordCured').value = rec.cured;
+  if (rec.medication) document.getElementById('recordMedication').value = rec.medication;
+  if (rec.hospital) document.getElementById('recordHospital').value = rec.hospital;
+  if (rec.indicators) document.getElementById('recordIndicators').value = rec.indicators;
+  if (rec.location) document.getElementById('recordLocation').value = rec.location;
+  if (rec.batch) document.getElementById('recordBatch').value = rec.batch;
+  if (rec.nextDate) document.getElementById('recordNextDate').value = rec.nextDate;
+  if (rec.height) document.getElementById('recordHeight').value = rec.height;
+  if (rec.weight) document.getElementById('recordWeight').value = rec.weight;
+  if (rec.department) document.getElementById('recordDepartment').value = rec.department;
+  if (rec.doctor) document.getElementById('recordDoctor').value = rec.doctor;
+  if (rec.cost) document.getElementById('recordCost').value = rec.cost;
+  if (rec.note) document.getElementById('recordNote').value = rec.note;
+
+  document.getElementById('recordModal').classList.add('active');
+}
+
+function configureRecordForm(type) {
+  var els = {
+    nameGroup: document.getElementById('recordNameGroup'),
+    nameLabel: document.getElementById('recordNameLabel'),
+    sevGroup: document.getElementById('severityGroup'),
+    dateRow1: document.getElementById('dateRow1'),
+    dateGroup2: document.getElementById('dateGroup2'),
+    dateLabel1: document.getElementById('dateLabel1'),
+    dateLabel2: document.getElementById('dateLabel2'),
+    curedGroup: document.getElementById('curedGroup'),
+    medGroup: document.getElementById('medicationGroup'),
+    hospitalGroup: document.getElementById('hospitalGroup'),
+    indicatorsGroup: document.getElementById('indicatorsGroup'),
+    locationGroup: document.getElementById('locationGroup'),
+    batchGroup: document.getElementById('batchGroup'),
+    nextDateGroup: document.getElementById('nextDateGroup'),
+    heightWeightGroup: document.getElementById('heightWeightGroup'),
+    doctorDeptGroup: document.getElementById('doctorDeptGroup'),
+    costGroup: document.getElementById('costGroup')
+  };
+
+  document.getElementById('recordName').required = true;
+  // Hide all optional groups
+  for (var k in els) {
+    if (k === 'nameGroup' || k === 'nameLabel' || k === 'dateRow1' || k === 'dateGroup2' || k === 'dateLabel1' || k === 'dateLabel2') continue;
+    els[k].style.display = 'none';
+  }
+  els.nameGroup.style.display = 'block';
+  els.dateRow1.style.display = 'grid';
+  els.dateGroup2.style.display = 'block';
+
+  if (type === 'allergy') {
+    els.nameLabel.textContent = '过敏源名称';
+    els.sevGroup.style.display = 'block';
+    els.dateLabel1.textContent = '发现日期';
+    els.dateGroup2.style.display = 'none';
+  } else if (type === 'disease') {
+    els.nameLabel.textContent = '疾病名称';
+    els.dateLabel1.textContent = '确诊日期';
+    els.dateGroup2.style.display = 'none';
+    els.curedGroup.style.display = 'block';
+  } else if (type === 'illness') {
+    // illness
+    nameLabel.textContent = '病症描述';
+    dateLabel1.textContent = '开始日期';
+    dateLabel2.textContent = '结束日期';
+    els.medGroup.style.display = 'block';
+  } else if (type === 'checkup') {
+    els.nameLabel.textContent = '体检名称';
+    els.dateLabel1.textContent = '体检日期';
+    els.dateGroup2.style.display = 'none';
+    els.hospitalGroup.style.display = 'block';
+    els.indicatorsGroup.style.display = 'block';
+  } else if (type === 'vaccination') {
+    els.nameLabel.textContent = '疫苗名称';
+    els.dateLabel1.textContent = '接种日期';
+    els.dateGroup2.style.display = 'none';
+    els.locationGroup.style.display = 'block';
+    els.batchGroup.style.display = 'block';
+    els.nextDateGroup.style.display = 'block';
+  } else if (type === 'growth') {
+    els.nameGroup.style.display = 'none';
+    document.getElementById('recordName').required = false;
+    els.dateLabel1.textContent = '记录日期';
+    els.dateGroup2.style.display = 'none';
+    els.heightWeightGroup.style.display = 'grid';
+  } else if (type === 'visit') {
+    els.nameLabel.textContent = '就诊原因';
+    els.dateLabel1.textContent = '就诊日期';
+    els.dateGroup2.style.display = 'none';
+    els.hospitalGroup.style.display = 'block';
+    els.doctorDeptGroup.style.display = 'grid';
+    els.costGroup.style.display = 'block';
+  }
+}
+
+function saveRecord(e) {
+  e.preventDefault();
+  var d = getData();
+  var memberId = document.getElementById('recordMemberId').value;
+  var type = document.getElementById('recordType').value;
+  var recordId = document.getElementById('recordId').value;
+
+  var m = findMember(memberId, d);
+  if (!m) return;
+
+  var rec = {
+    id: recordId || rid(),
+    name: document.getElementById('recordName').value.trim(),
+    note: document.getElementById('recordNote').value.trim()
+  };
+
+  if (type === 'allergy') {
+    rec.severity = document.getElementById('recordSeverity').value;
+    rec.date1 = document.getElementById('recordDate1').value;
+  } else if (type === 'disease') {
+    rec.date1 = document.getElementById('recordDate1').value;
+    rec.cured = document.getElementById('recordCured').value;
+  } else if (type === 'illness') {
+    rec.date1 = document.getElementById('recordDate1').value;
+    rec.date2 = document.getElementById('recordDate2').value;
+    rec.medication = document.getElementById('recordMedication').value.trim();
+  } else if (type === 'checkup') {
+    rec.date1 = document.getElementById('recordDate1').value;
+    rec.hospital = document.getElementById('recordHospital').value.trim();
+    rec.indicators = document.getElementById('recordIndicators').value.trim();
+  } else if (type === 'vaccination') {
+    rec.date1 = document.getElementById('recordDate1').value;
+    rec.location = document.getElementById('recordLocation').value.trim();
+    rec.batch = document.getElementById('recordBatch').value.trim();
+    rec.nextDate = document.getElementById('recordNextDate').value;
+  } else if (type === 'growth') {
+    rec.date1 = document.getElementById('recordDate1').value;
+    rec.height = document.getElementById('recordHeight').value;
+    rec.weight = document.getElementById('recordWeight').value;
+  } else if (type === 'visit') {
+    rec.date1 = document.getElementById('recordDate1').value;
+    rec.hospital = document.getElementById('recordHospital').value.trim();
+    rec.department = document.getElementById('recordDepartment').value.trim();
+    rec.doctor = document.getElementById('recordDoctor').value.trim();
+    rec.cost = document.getElementById('recordCost').value;
+  }
+
+  var listMap = {
+    allergy: m.allergies, disease: m.diseases, illness: m.illnesses,
+    checkup: m.checkups, vaccination: m.vaccinations, growth: m.growth, visit: m.visits
+  };
+  var list = listMap[type];
+
+  if (recordId) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === recordId) { list[i] = rec; break; }
+    }
+  } else {
+    list.push(rec);
+  }
+
+  saveData(d);
+  closeModal('recordModal');
+  viewMember(memberId);
+}
+
+var _pendingDeleteRecord = null;
+
+function confirmDeleteRecord(memberId, type, recordId) {
+  _pendingDeleteRecord = { memberId: memberId, type: type, recordId: recordId };
+  document.getElementById('confirmMsg').textContent = '确定要删除这条记录吗？';
+  document.getElementById('confirmDialog').classList.add('active');
+}
+
+function execDeleteRecord() {
+  if (!_pendingDeleteRecord) return;
+  var p = _pendingDeleteRecord;
+  var d = getData();
+  var m = findMember(p.memberId, d);
+  if (!m) return;
+  var listMap = {
+    allergy: m.allergies, disease: m.diseases, illness: m.illnesses,
+    checkup: m.checkups, vaccination: m.vaccinations, growth: m.growth, visit: m.visits
+  };
+  var setMap = {
+    allergy: 'allergies', disease: 'diseases', illness: 'illnesses',
+    checkup: 'checkups', vaccination: 'vaccinations', growth: 'growth', visit: 'visits'
+  };
+  var list = listMap[p.type];
+  var filtered = [];
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].id !== p.recordId) filtered.push(list[i]);
+  }
+  m[setMap[p.type]] = filtered;
+
+  saveData(d);
+  viewMember(p.memberId);
+  _pendingDeleteRecord = null;
+}
+
+// ==========================================
+// Modal & Confirm Helpers
+// ==========================================
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmDialog').classList.remove('active');
+  _pendingDeleteMemberId = null;
+  _pendingDeleteRecord = null;
+}
+
+// Close modals on overlay click
+document.getElementById('memberModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('memberModal');
+});
+document.getElementById('recordModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('recordModal');
+});
+document.getElementById('confirmDialog').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirm();
+});
+
+// ESC to close
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal('memberModal');
+    closeModal('recordModal');
+    closeConfirm();
+  }
+});
+
+// ==========================================
+// Init
+// ==========================================
+function initDemoData() {
+  var d = getData();
+  if (d.members.length > 0) return; // Already has data
+
+  var m1 = {
+    id: uid(), name: '张明远', gender: '男', birth: '1985-06-15', relation: '本人', avatar: '👨',
+    allergies: [
+      { id: rid(), name: '青霉素', severity: '重度', date1: '2010-03-12', note: '皮试阳性，终身禁用' },
+      { id: rid(), name: '花粉', severity: '轻度', date1: '2018-04-05', note: '春季发作，打喷嚏流涕' }
+    ],
+    diseases: [
+      { id: rid(), name: '高血压', date1: '2020-09-10', cured: '否', note: '每日服药，定期监测血压' }
+    ],
+    illnesses: [
+      { id: rid(), name: '流感', date1: '2024-01-15', date2: '2024-01-22', medication: '奥司他韦', note: '高烧39度，休息一周后恢复' }
+    ],
+    checkups: [
+      { id: rid(), name: '年度体检', date1: '2025-10-15', hospital: '瑞金医院', indicators: '血压135/85，血糖5.8，总胆固醇5.2，甘油三酯1.8', note: '血压偏高，建议低盐饮食' }
+    ],
+    vaccinations: [
+      { id: rid(), name: '流感疫苗', date1: '2025-10-20', location: '社区卫生中心', batch: 'FL20251001', nextDate: '', note: '每年接种一次' }
+    ],
+    growth: [
+      { id: rid(), date1: '2025-10-15', height: '175', weight: '78', note: '体检时测量' }
+    ],
+    visits: [
+      { id: rid(), name: '感冒发烧', date1: '2024-01-15', hospital: '瑞金医院', department: '内科', doctor: '王医生', cost: '280', note: '开了奥司他韦和退烧药' }
+    ]
+  };
+
+  var m2 = {
+    id: uid(), name: '李芳', gender: '女', birth: '1987-11-20', relation: '配偶', avatar: '👩',
+    allergies: [],
+    diseases: [],
+    illnesses: [
+      { id: rid(), name: '急性肠胃炎', date1: '2023-08-05', date2: '2023-08-08', medication: '蒙脱石散、补液盐', note: '疑似食用不洁食物' }
+    ],
+    checkups: [
+      { id: rid(), name: '妇科体检', date1: '2025-09-20', hospital: '红房子医院', indicators: 'HPV阴性，TCT正常，乳腺B超未见异常', note: '建议每年定期筛查' }
+    ],
+    vaccinations: [
+      { id: rid(), name: 'HPV九价疫苗', date1: '2024-03-10', location: '社区卫生中心', batch: 'HPV20240301', nextDate: '2024-05-10', note: '共三针，第二针' }
+    ],
+    growth: [
+      { id: rid(), date1: '2025-09-20', height: '162', weight: '55', note: '' }
+    ],
+    visits: [
+      { id: rid(), name: '急性肠胃炎', date1: '2023-08-05', hospital: '仁济医院', department: '消化内科', doctor: '李主任', cost: '450', note: '血常规+输液' }
+    ]
+  };
+
+  var m3 = {
+    id: uid(), name: '张小宝', gender: '男', birth: '2020-03-28', relation: '儿子', avatar: '👶',
+    allergies: [
+      { id: rid(), name: '牛奶蛋白', severity: '中度', date1: '2020-09-01', note: '需水解配方奶粉，3岁后逐渐缓解' }
+    ],
+    diseases: [],
+    illnesses: [
+      { id: rid(), name: '幼儿急疹', date1: '2021-06-10', date2: '2021-06-14', medication: '退烧药', note: '热退疹出，典型病程' },
+      { id: rid(), name: '感冒发烧', date1: '2024-12-01', date2: '2024-12-05', medication: '布洛芬混悬液', note: '幼儿园交叉感染' }
+    ],
+    checkups: [
+      { id: rid(), name: '入园体检', date1: '2023-08-01', hospital: '儿童医院', indicators: '身高98cm，体重15kg，视力正常，听力正常', note: '一切正常，顺利入园' }
+    ],
+    vaccinations: [
+      { id: rid(), name: '乙肝疫苗(第三针)', date1: '2020-07-28', location: '社区卫生中心', batch: 'YG20200701', nextDate: '', note: '乙肝三针全部完成' },
+      { id: rid(), name: '百白破疫苗', date1: '2020-09-15', location: '社区卫生中心', batch: 'BTP20200901', nextDate: '2020-10-15', note: '' },
+      { id: rid(), name: '水痘疫苗', date1: '2021-08-20', location: '社区卫生中心', batch: 'SD20210801', nextDate: '', note: '' }
+    ],
+    growth: [
+      { id: rid(), date1: '2020-03-28', height: '50', weight: '3.3', note: '出生' },
+      { id: rid(), date1: '2020-09-28', height: '68', weight: '8.2', note: '6个月' },
+      { id: rid(), date1: '2021-03-28', height: '76', weight: '10.5', note: '1周岁' },
+      { id: rid(), date1: '2022-03-28', height: '88', weight: '12.8', note: '2周岁' },
+      { id: rid(), date1: '2023-08-01', height: '98', weight: '15', note: '入园体检' }
+    ],
+    visits: [
+      { id: rid(), name: '幼儿急疹', date1: '2021-06-10', hospital: '儿童医院', department: '儿科', doctor: '张主任', cost: '180', note: '验血+退烧药' },
+      { id: rid(), name: '感冒发烧', date1: '2024-12-01', hospital: '儿童医院', department: '儿科', doctor: '刘医生', cost: '120', note: '开了布洛芬混悬液' }
+    ]
+  };
+
+  d.members.push(m1, m2, m3);
+  saveData(d);
+}
+
+initDemoData();
+renderMemberList();
+</script>
+
+</body>
+</html>
