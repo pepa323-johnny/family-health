@@ -79,8 +79,8 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    padding: env(safe-area-inset-top, 44px) 24px 0 24px;
-    min-height: 100px;
+    padding: 54px 24px 0 24px;
+    min-height: 110px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -190,10 +190,13 @@
     background: var(--bg-card);
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
-    padding: 22px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-sm);
+    display: flex;
+    gap: 16px;
+    align-items: center;
   }
 
   .member-card:hover {
@@ -205,20 +208,22 @@
   .member-card:active { transform: translateY(-1px); }
 
   .member-avatar {
-    width: 52px; height: 52px;
+    width: 64px; height: 64px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
+    font-size: 32px;
+    flex-shrink: 0;
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    margin-bottom: 14px;
     box-shadow: 0 2px 8px rgba(59,130,246,0.1);
   }
 
-  .member-name { font-size: 20px; font-weight: 700; margin-bottom: 3px; letter-spacing: 0; }
+  .member-card-body { flex: 1; min-width: 0; }
 
-  .member-info { font-size: 14px; color: var(--text-dim); margin-bottom: 10px; }
+  .member-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; letter-spacing: 0; }
+
+  .member-info { font-size: 14px; color: var(--text-dim); margin-bottom: 6px; }
 
   .member-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 
@@ -957,9 +962,9 @@ function setMemberPhoto(photoData) {
 
 function renderMemberAvatar(m) {
   if (m.photo) {
-    return '<img src="' + m.photo + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" alt="">';
+    return '<img src="' + m.photo + '" style="width:64px;height:64px;border-radius:50%;object-fit:cover;" alt="">';
   }
-  return '<span style="font-size:24px;">' + (m.avatar || '👨') + '</span>';
+  return '<span style="font-size:32px;">' + (m.avatar || '👨') + '</span>';
 }
 
 function renderDetailAvatar(m) {
@@ -1009,9 +1014,11 @@ function renderMemberList() {
     var age = calcAge(m.birth);
     html += '<div class="member-card" onclick="viewMember(\'' + m.id + '\')">' +
       '<div class="member-avatar">' + renderMemberAvatar(m) + '</div>' +
-      '<div class="member-name">' + escHtml(m.name) + '</div>' +
-      '<div class="member-info">' + (m.gender || '') + ' · ' + (age || '未知') + ' · ' + escHtml(m.relation || '') + '</div>' +
-      '<div class="member-tags">' + tagsHtml + '</div>' +
+      '<div class="member-card-body">' +
+        '<div class="member-name">' + escHtml(m.name) + '</div>' +
+        '<div class="member-info">' + (m.gender || '') + ' · ' + (age || '未知') + ' · ' + escHtml(m.relation || '') + '</div>' +
+        '<div class="member-tags">' + tagsHtml + '</div>' +
+      '</div>' +
     '</div>';
   });
   grid.innerHTML = html;
