@@ -241,30 +241,88 @@
     background: var(--bg-card);
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
-    padding: 24px;
+    padding: 28px 24px;
     margin-bottom: 20px;
     display: flex;
-    gap: 20px;
-    align-items: center;
-    flex-wrap: wrap;
+    gap: 24px;
     box-shadow: var(--shadow-sm);
   }
 
+  .detail-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+
   .detail-avatar {
-    width: 68px; height: 68px;
+    width: 88px; height: 88px;
     border-radius: 50%;
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 34px;
+    font-size: 44px;
     flex-shrink: 0;
-    box-shadow: 0 2px 12px rgba(59,130,246,0.12);
+    box-shadow: 0 4px 20px rgba(59,130,246,0.15);
+    margin-bottom: 12px;
   }
 
-  .detail-info { flex: 1; min-width: 180px; }
-  .detail-name { font-size: 24px; font-weight: 700; letter-spacing: 0; }
-  .detail-meta { font-size: 14px; color: var(--text-dim); margin-top: 4px; }
+  .detail-name { font-size: 26px; font-weight: 700; letter-spacing: 0; margin-bottom: 2px; }
+  .detail-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 12px; }
+  .detail-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+
+  .detail-right {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detail-right-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .health-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .health-stat {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 12px 14px;
+    text-align: center;
+  }
+
+  .health-stat .stat-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .health-stat .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .health-stat.highlight {
+    border-color: #fecaca;
+    background: #fef2f2;
+  }
+  .health-stat.highlight .stat-num { color: #dc2626; }
 
   /* Record sections */
   .record-section {
@@ -482,6 +540,8 @@
     .member-grid { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
     .detail-profile { flex-direction: column; text-align: center; }
+    .detail-left { min-width: auto; }
+    .health-stats { grid-template-columns: 1fr 1fr 1fr; }
     .chart-row { grid-template-columns: 1fr; }
     .modal { padding: 22px; }
   }
@@ -904,9 +964,9 @@ function renderMemberAvatar(m) {
 
 function renderDetailAvatar(m) {
   if (m.photo) {
-    return '<img src="' + m.photo + '" style="width:64px;height:64px;border-radius:50%;object-fit:cover;" alt="">';
+    return '<img src="' + m.photo + '" style="width:88px;height:88px;border-radius:50%;object-fit:cover;" alt="">';
   }
-  return '<span style="font-size:32px;">' + (m.avatar || '👨') + '</span>';
+  return '<span style="font-size:44px;">' + (m.avatar || '👨') + '</span>';
 }
 
 // ==========================================
@@ -975,16 +1035,37 @@ function viewMember(id) {
 
   // Profile
   var age = calcAge(m.birth);
+
+  // Build health stats
+  var allergyCount = (m.allergies || []).length;
+  var diseaseCount = (m.diseases || []).length;
+  var illnessCount = (m.illnesses || []).length;
+  var checkupCount = (m.checkups || []).length;
+  var vaccCount = (m.vaccinations || []).length;
+  var growthCount = (m.growth || []).length;
+  var visitCount = (m.visits || []).length;
+
   var profileHtml = '' +
-    '<div class="detail-avatar">' + renderDetailAvatar(m) + '</div>' +
-    '<div class="detail-info">' +
+    '<div class="detail-left">' +
+      '<div class="detail-avatar">' + renderDetailAvatar(m) + '</div>' +
       '<div class="detail-name">' + escHtml(m.name) + '</div>' +
-      '<div class="detail-meta">' + (m.gender || '') + ' · ' + (age || '未知') + ' · ' + escHtml(m.relation || '') + (m.birth ? ' · 生日 ' + m.birth : '') + '</div>' +
+      '<div class="detail-meta">' + (m.gender || '') + ' · ' + (age || '未知') + '<br>' + escHtml(m.relation || '') + (m.birth ? ' · ' + m.birth : '') + '</div>' +
+      '<div class="detail-actions">' +
+        '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showEditMemberModal(\'' + m.id + '\')">编辑资料</button>' +
+        '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();toggleCharts(\'' + m.id + '\')">📊 趋势</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();confirmDeleteMember(\'' + m.id + '\')">删除</button>' +
+      '</div>' +
     '</div>' +
-    '<div style="display:flex;gap:8px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showEditMemberModal(\'' + m.id + '\')">编辑</button>' +
-      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();toggleCharts(\'' + m.id + '\')">📊 趋势</button>' +
-      '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();confirmDeleteMember(\'' + m.id + '\')">删除</button>' +
+    '<div class="detail-right">' +
+      '<div class="detail-right-title">健康概览</div>' +
+      '<div class="health-stats">' +
+        '<div class="health-stat' + (allergyCount > 0 ? ' highlight' : '') + '"><div class="stat-num">' + allergyCount + '</div><div class="stat-label">⚠ 过敏</div></div>' +
+        '<div class="health-stat' + (diseaseCount > 0 ? ' highlight' : '') + '"><div class="stat-num">' + diseaseCount + '</div><div class="stat-label">🩺 病史</div></div>' +
+        '<div class="health-stat"><div class="stat-num">' + illnessCount + '</div><div class="stat-label">🤒 生病</div></div>' +
+        '<div class="health-stat"><div class="stat-num">' + checkupCount + '</div><div class="stat-label">🩻 体检</div></div>' +
+        '<div class="health-stat"><div class="stat-num">' + vaccCount + '</div><div class="stat-label">💉 疫苗</div></div>' +
+        '<div class="health-stat"><div class="stat-num">' + visitCount + '</div><div class="stat-label">🏥 就医</div></div>' +
+      '</div>' +
     '</div>';
   document.getElementById('detailProfile').innerHTML = profileHtml;
 
