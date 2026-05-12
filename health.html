@@ -1039,6 +1039,7 @@ function viewMember(id) {
   document.getElementById('memberListView').style.display = 'none';
   document.getElementById('detailView').style.display = 'block';
   document.getElementById('headerActions').style.display = 'none';
+  if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage('detail');
 
   // Profile
   var age = calcAge(m.birth);
@@ -1371,6 +1372,7 @@ function backToList() {
   document.getElementById('memberListView').style.display = 'block';
   document.getElementById('detailView').style.display = 'none';
   document.getElementById('headerActions').style.display = 'flex';
+  if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage('list');
   renderMemberList();
 }
 
