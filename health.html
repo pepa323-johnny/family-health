@@ -37,7 +37,7 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "HarmonyOS Sans", sans-serif;
     background:
       radial-gradient(circle at 15% 20%, rgba(59,130,246,0.04) 0%, transparent 50%),
       radial-gradient(circle at 85% 60%, rgba(99,102,241,0.04) 0%, transparent 50%),
@@ -45,8 +45,12 @@
       linear-gradient(180deg, #eef3fb 0%, #f2f5fa 30%, #f8fafc 100%);
     color: var(--text);
     min-height: 100vh;
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: 0.01em;
   }
 
   /* Subtle pattern overlay */
@@ -86,13 +90,13 @@
   }
 
   .app-logo {
-    font-size: 19px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--text);
     display: flex;
     align-items: center;
     gap: 10px;
-    letter-spacing: -0.3px;
+    letter-spacing: 0;
   }
 
   .app-logo .dot {
@@ -171,9 +175,9 @@
 
   .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 
-  .section-title { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .section-title { font-size: 26px; font-weight: 700; color: var(--text); letter-spacing: 0; }
 
-  .section-subtitle { font-size: 14px; color: var(--text-dim); margin-top: 4px; }
+  .section-subtitle { font-size: 15px; color: var(--text-dim); margin-top: 4px; }
 
   /* ===== Member Cards ===== */
   .member-grid {
@@ -212,14 +216,14 @@
     box-shadow: 0 2px 8px rgba(59,130,246,0.1);
   }
 
-  .member-name { font-size: 18px; font-weight: 700; margin-bottom: 3px; letter-spacing: -0.2px; }
+  .member-name { font-size: 20px; font-weight: 700; margin-bottom: 3px; letter-spacing: 0; }
 
-  .member-info { font-size: 13px; color: var(--text-dim); margin-bottom: 10px; }
+  .member-info { font-size: 14px; color: var(--text-dim); margin-bottom: 10px; }
 
   .member-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 
   .tag {
-    font-size: 11px; font-weight: 600;
+    font-size: 12px; font-weight: 600;
     padding: 3px 10px; border-radius: 12px;
     background: var(--accent-light); color: var(--accent);
   }
@@ -259,8 +263,8 @@
   }
 
   .detail-info { flex: 1; min-width: 180px; }
-  .detail-name { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
-  .detail-meta { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+  .detail-name { font-size: 24px; font-weight: 700; letter-spacing: 0; }
+  .detail-meta { font-size: 14px; color: var(--text-dim); margin-top: 4px; }
 
   /* Record sections */
   .record-section {
@@ -319,9 +323,9 @@
   .record-dot.visit { background: var(--warning); }
 
   .record-body { flex: 1; min-width: 0; }
-  .record-title { font-size: 14px; font-weight: 600; }
-  .record-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
-  .record-note { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .record-title { font-size: 15px; font-weight: 600; }
+  .record-sub { font-size: 13px; color: var(--text-dim); margin-top: 3px; }
+  .record-note { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
   .record-image { margin-top: 8px; }
   .record-image img { max-width: 200px; max-height: 150px; border-radius: var(--radius-xs); border: 1px solid var(--border); object-fit: cover; }
 
@@ -383,13 +387,13 @@
     box-shadow: var(--shadow-lg);
   }
 
-  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 22px; letter-spacing: -0.2px; }
+  .modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 22px; letter-spacing: 0; }
 
   .form-group { margin-bottom: 16px; }
 
   .form-group label {
     display: block;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-dim);
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -400,12 +404,12 @@
   .form-group select,
   .form-group textarea {
     width: 100%;
-    padding: 11px 14px;
+    padding: 12px 14px;
     background: #f8fafc;
     border: 1.5px solid var(--border);
     border-radius: var(--radius-xs);
     color: var(--text);
-    font-size: 14px;
+    font-size: 15px;
     font-family: inherit;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
