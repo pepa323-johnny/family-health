@@ -1,4 +1,4 @@
-const CACHE_NAME = 'family-health-v1';
+const CACHE_NAME = 'family-health-v2';
 const ASSETS = [
   '/family-health/',
   '/family-health/index.html',
@@ -24,15 +24,16 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Network-first: always try network, fall back to cache
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      });
+    fetch(event.request).then(response => {
+      if (response && response.status === 200) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      }
+      return response;
+    }).catch(function() {
+      return caches.match(event.request);
     })
   );
 });
